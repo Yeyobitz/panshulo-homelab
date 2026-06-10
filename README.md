@@ -1,35 +1,34 @@
-# Panshulo Homelab 🖥️
+# Panshulo Homelab
 
 [![Linux](https://img.shields.io/badge/OS-Ubuntu_24.04-orange?logo=ubuntu)](https://ubuntu.com)
 [![Docker](https://img.shields.io/badge/Docker-20%2B-2496ed?logo=docker)](https://docker.com)
 [![Status](https://img.shields.io/badge/Status-Active-success)]()
 
-> Homelab server — infraestructura completa de servicios auto-hosteada.
-> El objetivo: automatizar todo lo repetitivo, aprender infraestructura real, y tener control total de mis datos.
+Un servidor casero con servicios auto-hosteado. Nada de nube. Todo mio.
 
 ---
 
-## 📊 Stack actual
+## Stack actual
 
-| Categoría | Servicios | Propósito |
-|-----------|-----------|-----------|
-| **🎬 Streaming** | Plex, Jellyfin, Tautulli, Overseerr | Películas, series, tracking de reproducción |
-| **🤖 Automatización** | Sonarr, Radarr, Bazarr, Prowlarr, qBittorrent | Descarga y organización automática de medios |
-| **📊 Monitoreo** | Homarr, Netdata, Dashboard propio (Flask) | Estado del servidor en tiempo real |
-| **💻 Desarrollo** | Gitea, Hermes Agent | Git self-hosted, agente AI |
-| **💰 Finanzas** | Cashflow MVP | Gestión de finanzas personales |
-| **🔐 Acceso** | Tailscale, Cloudflare Tunnel, UFW | VPN + túneles + firewall zero-trust |
+| Categoria | Servicios | Para que |
+|-----------|-----------|----------|
+| Streaming | Plex, Jellyfin, Tautulli, Overseerr | Peliculas, series, tracking |
+| Automatizacion | Sonarr, Radarr, Bazarr, Prowlarr, qBittorrent | Descarga y organizacion automatica |
+| Monitoreo | Homarr, Netdata, Dashboard Flask | Estado del server en tiempo real |
+| Desarrollo | Gitea, Hermes Agent | Git propio, agente AI |
+| Finanzas | Cashflow MVP | Gestion de lucas |
+| Acceso | Tailscale, Cloudflare Tunnel, UFW | VPN + tuneles + firewall |
 
 ---
 
-## 🏗️ Arquitectura
+## Arquitectura
 
 ```
 Internet
     │
-    ├── Cloudflare Tunnel ──► Caddy (:8080) ──► Servicios web
+    ├── Cloudflare Tunnel -> Caddy (:8080) -> Servicios web
     │
-    └── Tailscale VPN ──► Servidor (acceso directo)
+    └── Tailscale VPN -> Servidor (acceso directo)
                             │
                     ┌───────┴───────┐
                     │               │
@@ -42,65 +41,65 @@ Internet
         (SO + apps) (media) Intel i7-7600U
 ```
 
-**Hardware:** Lenovo ThinkPad — Intel i7-7600U, 7GB RAM, 476GB NVMe + 931GB HDD
+**Hardware:** Lenovo ThinkPad - Intel i7-7600U, 7GB RAM, 476GB NVMe + 931GB HDD
 
 ---
 
-## 🛠️ Lo que aprendí (y demuestra)
+## Que aprendi
 
-| Skill | Lo que hice |
-|-------|------------|
-| **Linux SysAdmin** | Ubuntu Server headless, systemd, cron, bash scripting, sin GUI |
-| **Docker** | 15+ contenedores con Docker Compose, redes, volúmenes, reinicio automático |
-| **Redes** | UFW (default deny), Tailscale VPN, Cloudflare Tunnel, DNS, routing |
-| **Monitoreo** | Dashboard Flask custom, Netdata, health checks, alertas |
-| **Seguridad** | Firewall zero-trust, túneles SSL, VPN, puertos solo desde LAN |
-| **Almacenamiento** | Particionamiento, montaje automático, SSD + HDD pool |
-| **Git** | Gitea self-hosted + GitHub, CI básico |
+Linux SysAdmin: Ubuntu Server headless, systemd, cron, bash scripting, cero GUI.
 
----
+Docker: 15+ contenedores con Docker Compose. Redes, volumenes, restart policies.
 
-## 🚀 Cómo surgió
+Redes: UFW con default deny, Tailscale VPN, Cloudflare Tunnel, DNS, routing basico.
 
-Empecé con un notebook viejo y la idea de tener mis propios servicios sin depender de terceros. Hoy es mi servidor principal 24/7 que me da streaming, backup de código, métricas, automatización de medios, y un sandbox para aprender infraestructura real.
+Monitoreo: Dashboard en Flask con psutil + Netdata. Health checks y alertas via cron y systemd.
 
-El nombre "Panshulo" empezó como talla y se quedó.
+Seguridad: Firewall zero-trust, tuneles SSL, VPN mesh. Nada expuesto al mundo sin pasar por Cloudflare o Tailscale.
+
+Almacenamiento: SSD para el SO y apps, HDD USB para media. Particionado, montaje automatico.
+
+Git: Gitea auto-hosteado + GitHub.
 
 ---
 
-## 📸 Capturas
+## Como surgio
 
-_(Próximamente — dashboard Flask personalizado y estado de servicios)_
+Empece con un notebook tirado y la idea de tener mis servicios sin pagarle a nadie. Hoy es mi servidor 24/7. Streaming, repos de codigo, metricas, automatizacion de medios, y un laboratorio para romper cosas y arreglarlas.
 
----
-
-## 🔧 Stack técnico
-
-- **OS:** Ubuntu Server 24.04 LTS
-- **Contenedores:** Docker + Docker Compose
-- **Firewall:** UFW (default deny incoming)
-- **VPN:** Tailscale (mesh VPN)
-- **Proxy/Túneles:** Cloudflare Tunnel, Caddy
-- **Monitoreo:** Netdata, dashboard Flask custom (Python/psutil)
-- **Git:** Gitea
+El nombre "Panshulo" empezo como talla y se quedo.
 
 ---
 
-## ⚙️ Cómo usar
+## Capturas
+
+(proximamente - dashboard Flask y estado de servicios)
+
+---
+
+## Stack tecnico
+
+OS: Ubuntu Server 24.04 LTS
+Contenedores: Docker + Docker Compose
+Firewall: UFW (default deny incoming)
+VPN: Tailscale (mesh)
+Proxy/Tuneles: Cloudflare Tunnel + Caddy
+Monitoreo: Netdata + dashboard Flask (Python/psutil)
+Git: Gitea
+
+---
+
+## Como usar
 
 1. Clona el repo
 2. Copia `.env.example` a `.env` y completa tus variables
 3. `docker compose -f stack/compose.yml up -d`
 4. Configura los servicios desde sus respectivas UIs
 
-> **⚠️ Este repo es un portfolio.** Los valores reales (IPs, tokens, dominios) han sido reemplazados por placeholders por seguridad.
+Los valores reales (IPs, tokens, dominios) estan reemplazados por placeholders. No subo credenciales a GitHub.
 
 ---
 
-## 📬 Contacto
+## Contacto
 
-[LinkedIn](https://linkedin.com/in/) | [Email](mailto:diegoqm96@hotmail.com)
-
----
-
-*Hecho con 💻 y café desde Chile — abierto a oportunidades remotas en Canada/USA.*
+[LinkedIn](https://linkedin.com/in/) - diegoqm96@hotmail.com
