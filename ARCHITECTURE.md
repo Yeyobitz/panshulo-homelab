@@ -1,12 +1,12 @@
-# Panshulo Homelab — Arquitectura
+# Panshulo Homelab - Network Architecture
 
-## Diagrama de red
+## Network diagram
 
 ```mermaid
 graph TB
     subgraph Internet
         CF[Cloudflare]
-        USER[Usuario/Celular]
+        USER[User/Phone]
     end
 
     subgraph "Tailscale Mesh VPN"
@@ -17,12 +17,12 @@ graph TB
         ROUTER[Router]
     end
 
-    subgraph "Server - Panshulo"
+    subgraph "Server"
         direction TB
         FW[UFW Firewall<br/>default deny inbound]
         CT[Cloudflare Tunnel<br/>cloudflared]
         CADDY[Caddy :8080<br/>reverse proxy]
-        
+
         subgraph "Docker Host"
             PLEX[Plex :32400]
             JELLY[Jellyfin :8096]
@@ -40,9 +40,9 @@ graph TB
             DASHBOARD[Dashboard Flask :5057]
             NETDATA[Netdata :19999]
         end
-        
+
         subgraph "Storage"
-            NVME[NVMe 476GB<br/>SO + Apps]
+            NVME[NVMe 476GB<br/>OS + Apps]
             HDD[USB HDD 931GB<br/>Media: movies/series/music]
         end
     end
@@ -55,9 +55,9 @@ graph TB
     CADDY --> JELLY
     CADDY --> OVERSEER
     CADDY --> GITEA
-    
-    ROUTER -->|Puertos LAN| FW
-    TS -->|Encriptado| FW
+
+    ROUTER -->|LAN ports| FW
+    TS -->|Encrypted| FW
     FW --> DASHBOARD
     FW --> SONARR
     FW --> RADARR
@@ -72,16 +72,15 @@ graph TB
     RADARR --> HDD
 ```
 
-## Puertos expuestos en LAN (192.168.1.0/24)
+## Ports exposed on LAN
 
-| Puerto | Servicio | Acceso |
-|--------|----------|--------|
-| 22/tcp | SSH | Solo LAN + Tailscale |
-| 80/tcp | HTTP (CasaOS) | LAN |
+| Port | Service | Access |
+|------|---------|--------|
+| 22/tcp | SSH | LAN + Tailscale only |
 | 3000/tcp | Gitea | LAN + Cloudflare Tunnel |
 | 32400/tcp | Plex | LAN |
 | 5050/tcp | Cashflow MVP | LAN |
-| 5051/tcp | Directorio Alumnos | LAN |
+| 5051/tcp | Student Directory | LAN |
 | 5055/tcp | Overseerr | LAN |
 | 5057/tcp | Dashboard | LAN |
 | 6767/tcp | Bazarr | LAN |
@@ -97,22 +96,22 @@ graph TB
 | 9696/tcp | Prowlarr | LAN |
 | 19999/tcp | Netdata | LAN |
 
-## Seguridad
+## Security
 
-- **Firewall:** UFW con default deny inbound. Solo puertos específicos abiertos desde LAN
-- **VPN:** Tailscale mesh VPN para acceso remoto (sin exponer puertos a Internet)
-- **Túneles:** Cloudflare Tunnel para servicios web públicos (sin abrir puertos en el router)
-- **Reverse Proxy:** Caddy con SSL automático para servicios vía tunnel
-- **IPv6:** Bloqueado completamente (incluso Docker)
+- UFW: default deny inbound, allowlist only
+- Tailscale mesh VPN for remote access (no ports exposed to internet)
+- Cloudflare Tunnel for public web services (no open ports on router)
+- Caddy reverse proxy with automatic SSL
+- IPv6 fully blocked (including Docker forwarded traffic)
 
-## Flujo de acceso remoto
+## Remote access flow
 
 ```
-Celular/Laptop
-    │
-    ├── Cloudflare Tunnel (sin puertos abiertos)
-    │   └── Gitea, Plex (vía tunnel), Overseerr
-    │
-    └── Tailscale (VPN mesh)
-        └── Todos los servicios como si estuviera en LAN
+Phone/Laptop
+    |
+    +-- Cloudflare Tunnel (no open ports)
+    |   +-- Gitea, Overseerr
+    |
+    +-- Tailscale (mesh VPN)
+        +-- All services as if on LAN
 ```
