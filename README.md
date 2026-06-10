@@ -102,4 +102,4 @@ Real values (IPs, tokens, domains) have been replaced with placeholders. No cred
 
 ## Contact
 
-[LinkedIn](https://linkedin.com/in/) - diegoqm96@hotmail.com
+[LinkedIn](https://linkedin.com/in/yeyobitz) - [GitHub](https://github.com/Yeyobitz) - diegoqm96@hotmail.com
