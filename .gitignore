@@ -1,0 +1,8 @@
+# Sensitive files — never commit these
+.env
+*.log
+__pycache__/
+*.pyc
+.DS_Store
+screenshots/*.png
+screenshots/*.jpg

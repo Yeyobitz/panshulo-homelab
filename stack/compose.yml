@@ -1,0 +1,196 @@
+# =============================================================================
+# Panshulo Homelab — Docker Stack
+# =============================================================================
+# Este es un extracto representativo de la configuración real.
+# Todos los valores sensibles han sido reemplazados por placeholders.
+# =============================================================================
+
+services:
+  # ── Media Streaming ─────────────────────────────────────────────────────
+  plex:
+    image: linuxserver/plex:latest
+    container_name: plex
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-America/Santiago}
+      - VERSION=docker
+    volumes:
+      - ${CONFIG_DIR}/plex:/config
+      - ${MEDIA_DIR}/movies:/data/movies
+      - ${MEDIA_DIR}/series:/data/series
+    ports:
+      - "32400:32400"
+    restart: unless-stopped
+
+  jellyfin:
+    image: linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-America/Santiago}
+    volumes:
+      - ${CONFIG_DIR}/jellyfin:/config
+      - ${MEDIA_DIR}/movies:/data/movies
+      - ${MEDIA_DIR}/series:/data/series
+    ports:
+      - "8096:8096"
+    restart: unless-stopped
+
+  # ── Media Automation ────────────────────────────────────────────────────
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-America/Santiago}
+    volumes:
+      - ${CONFIG_DIR}/sonarr:/config
+      - ${MEDIA_DIR}/series:/tv
+      - ${DOWNLOADS_DIR}:/downloads
+    ports:
+      - "8989:8989"
+    restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-America/Santiago}
+    volumes:
+      - ${CONFIG_DIR}/radarr:/config
+      - ${MEDIA_DIR}/movies:/movies
+      - ${DOWNLOADS_DIR}:/downloads
+    ports:
+      - "7878:7878"
+    restart: unless-stopped
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-America/Santiago}
+    volumes:
+      - ${CONFIG_DIR}/bazarr:/config
+      - ${MEDIA_DIR}/movies:/movies
+      - ${MEDIA_DIR}/series:/tv
+    ports:
+      - "6767:6767"
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-America/Santiago}
+    volumes:
+      - ${CONFIG_DIR}/prowlarr:/config
+    ports:
+      - "9696:9696"
+    restart: unless-stopped
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-America/Santiago}
+      - WEBUI_PORT=8085
+    volumes:
+      - ${CONFIG_DIR}/qbittorrent:/config
+      - ${DOWNLOADS_DIR}:/downloads
+    ports:
+      - "8085:8085"
+      - "6881:6881"
+      - "6881:6881/udp"
+    restart: unless-stopped
+
+  # ── Monitoring & Dashboard ──────────────────────────────────────────────
+  homarr:
+    image: ghcr.io/homarr-labs/homarr:latest
+    container_name: homarr
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-America/Santiago}
+    volumes:
+      - ${CONFIG_DIR}/homarr:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "7575:7575"
+    restart: unless-stopped
+
+  netdata:
+    image: netdata/netdata:latest
+    container_name: netdata
+    hostname: ${HOSTNAME:-panshulo}
+    environment:
+      - DOCKER_USR=root
+    volumes:
+      - /etc/passwd:/host/etc/passwd:ro
+      - /etc/group:/host/etc/group:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "19999:19999"
+    restart: unless-stopped
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor:unconfined
+
+  # ── Media Experiences ───────────────────────────────────────────────────
+  overseerr:
+    image: ghcr.io/linuxserver/overseerr:latest
+    container_name: overseerr
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-America/Santiago}
+    volumes:
+      - ${CONFIG_DIR}/overseerr:/app/config
+    ports:
+      - "5055:5055"
+    restart: unless-stopped
+
+  tautulli:
+    image: lscr.io/linuxserver/tautulli:latest
+    container_name: tautulli
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-America/Santiago}
+    volumes:
+      - ${CONFIG_DIR}/tautulli:/config
+    ports:
+      - "8181:8181"
+    restart: unless-stopped
+
+  # ── Development ─────────────────────────────────────────────────────────
+  gitea:
+    image: gitea/gitea:latest
+    container_name: gitea
+    environment:
+      - USER_UID=${PUID:-1000}
+      - USER_GID=${PGID:-1000}
+      - GITEA__server__DOMAIN=${GITEA_DOMAIN:-git.example.com}
+      - GITEA__server__HTTP_PORT=3000
+      - GITEA__server__ROOT_URL=${GITEA_URL:-https://git.example.com}
+    volumes:
+      - ${CONFIG_DIR}/gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "3000:3000"
+      - "2222:22"
+    restart: unless-stopped
